@@ -13,8 +13,8 @@ phases:
  post_build:
   commands:
    - echo gradle -version
- artifacts:
-   type: zip
-   files:
-     - samTemplate.yaml
-     - outputSamTemplate.yaml
+artifacts:
+ type: zip
+ files:
+   - samTemplate.yaml
+   - outputSamTemplate.yaml
