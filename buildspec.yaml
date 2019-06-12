@@ -11,14 +11,9 @@ phases:
    - gradle buildZip
  post_build:
   commands:
-   - cd build
-   - cd distributions
-   - ls
-   - aws s3 sync lambdaTest-0.0.1.zip s3://boneylambdabucket/lambdaTest
-   #- aws lambda update-function-code --lambda-test lambda-test --zip-file fileb://build/distributions//lambdaTest-0.0.1.zip
-   #- aws cloudformation package --template-file samTemplate.yml --s3-bucket boneylambdabucket --output-template-file outputSamTemplate.yml
-   # artifacts:
-   #   type: zip
-   #   files:
-   #     - samTemplate.yml
-   #     - outputSamTemplate.yaml
+   - aws cloudformation package --debug --template-file samTemplate.yml --s3-bucket boneylambdabucket/lambdaTest --output-template-file outputSamTemplate.yml
+   artifacts:
+     type: zip
+     files:
+       - samTemplate.yaml
+       - outputSamTemplate.yaml
