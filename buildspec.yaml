@@ -12,8 +12,8 @@ phases:
  post_build:
   commands:
    - aws cloudformation package --debug --template-file samTemplate.yml --s3-bucket boneylambdabucket/lambdaTest --output-template-file outputSamTemplate.yml
-   artifacts:
-     type: zip
-     files:
-       - samTemplate.yaml
-       - outputSamTemplate.yaml
+ artifacts:
+   type: zip
+   files:
+     - samTemplate.yaml
+     - outputSamTemplate.yaml
