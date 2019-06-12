@@ -7,7 +7,7 @@ Resources:
     Properties:
       Handler: com.lambda.lambdaTest.MainController::test
       Runtime: java8
-      CodeUri: .
+      CodeUri: ./build/distributions/lambdaTest-0.0.1.zip
       Role: arn:aws:iam::435341406651:role/DemoLambda
       FunctionName: lambda-test
       Description: 'Lambda function for Demo'

@@ -1,12 +1,20 @@
 version: 0.2
 phases:
-  install:
-    runtime-versions:
-      java: openjdk8
-    commands:
-      - aws cloudformation package --template-file samTemplate.yaml --s3-bucket boneylambdabucket --output-template-file outputSamTemplate.yaml
-artifacts:
-  type: zip
-  files:
-    - samTemplate.yaml
-    - outputSamTemplate.yaml
+ install:
+  runtime-versions:
+   java: openjdk8
+ pre_build:
+  commands:
+   - echo gradle -version
+ build:
+  commands:
+   - gradle buildZip
+   - aws cloudformation package --debug --template-file samTemplate.yml --s3-bucket boneylambdabucket/lambdaTest --output-template-file outputSamTemplate.yml
+ post_build:
+  commands:
+   - echo gradle -version
+ artifacts:
+   type: zip
+   files:
+     - samTemplate.yaml
+     - outputSamTemplate.yaml
