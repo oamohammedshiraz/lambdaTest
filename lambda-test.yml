@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Indexer Lambda Stack"
+
+Parameters:
+  vpcId:
+    Description: The VPC that the lambda should use
+    Type: AWS::EC2::VPC::Id
+
+  serviceSubnets:
+    Description: "The subnets the lambda should use (private)"
+    Type: "List<AWS::EC2::Subnet::Id>"
+
+  lambdaBuildBucket:
+    Type: "String"
+    Default: "boneylambdabucket"
+
+  lambdaBuildFileKey:
+    Type: "String"
+    Default: "lambdaTest/lambdaTest-0.0.1.zip"
+
+  lambdaFunctionName:
+    Type: "String"
+    Default: "lambda-test"
+    Description: "Name of the lambda function. This will be appended to the beginning of many of the resources that are created"
+
+Resources:
+
+  IndexerLambda:
+    Type: "AWS::Lambda::Function"
+    DependsOn:
+      - IndexerLogGroup
+    Properties:
+      Code:
+        S3Bucket: !Ref "lambdaBuildBucket"
+        S3Key: !Ref "lambdaBuildFileKey"
+      Description: "Triggered from MySql Trigger in IndexLog table"
+      FunctionName: !Ref "lambdaFunctionName"
+      Handler: "com.lambda.lambdaTest.MainController::test"
+      MemorySize: 1024
+      Role: !GetAtt "IndexerRole.Arn"
+      Runtime: "java8"
+      Timeout: 900
+      ReservedConcurrentExecutions: 1
+      VpcConfig:
+        SecurityGroupIds:
+        - !Ref IndexerLambdaSecurityGroup
+        SubnetIds: !Ref serviceSubnets
+
+  IndexerRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub lambda-role-${lambdaFunctionName}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - "sts:AssumeRole"
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+      Policies:
+        - PolicyName: lambda
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Effect: Allow
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${lambdaFunctionName}:*
+              - Action:
+                  - 's3:GetObject'
+                Effect: Allow
+                Resource:
+                  - !Sub 'arn:aws:s3:::${lambdaBuildBucket}/*'
+              - Action:
+                  - 'cloudwatch:PutMetricData'
+                  - 'ec2:CreateNetworkInterface'
+                  - 'ec2:DescribeNetworkInterfaces'
+                  - 'ec2:DeleteNetworkInterface'
+                Effect: Allow
+                Resource: '*'
+
+  IndexerLogGroup:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${lambdaFunctionName}
+      RetentionInDays: 30
+
+  IndexerLambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${lambdaFunctionName}-sg
+      GroupDescription: !Sub "Security Group for Indexer Lambda"
+      VpcId: !Ref vpcId
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: "0.0.0.0/0"
+      Tags:
+        - Key: Name
+          Value: !Sub ${lambdaFunctionName}-sg
+
+Outputs:
+  IndexerLambdaArn:
+    Value: !GetAtt "IndexerLambda.Arn"
