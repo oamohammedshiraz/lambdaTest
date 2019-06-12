@@ -16,8 +16,8 @@ phases:
    - ls
    #- aws lambda update-function-code --lambda-test lambda-test --zip-file fileb://build/distributions//lambdaTest-0.0.1.zip
    - aws cloudformation package --template-file samTemplate.yml --s3-bucket boneylambdabucket --output-template-file outputSamTemplate.yml
- artifacts:
-   type: zip
-   files:
-     - samTemplate.yml
-     - outputSamTemplate.yaml
+   artifacts:
+     type: zip
+     files:
+       - samTemplate.yml
+       - outputSamTemplate.yaml
