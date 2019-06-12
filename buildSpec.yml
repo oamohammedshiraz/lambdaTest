@@ -1,12 +1,11 @@
-version: 0.1
-
+version: 0.2
 phases:
-  install:
-    commands:
-      - aws cloudformation package --template-file samTemplate.yml --s3-bucket boneylambdabucket --output-template-file outputSamTemplate.yml
-      
-artifacts:
-  type: zip
-  files:
-    - samTemplate.yml
-    - outputSamTemplate.yml
+ pre_build:
+  commands:
+   - echo gradle -version
+ build:
+  commands:
+   - gradle buildZip
+ post_build:
+  commands:
+   - aws lambda update-function-code --function-name lambda-test --zip-file fileb://build/distributions//lambdaTest-0.0.1.zip
