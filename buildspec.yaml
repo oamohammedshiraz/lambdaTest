@@ -11,7 +11,10 @@ phases:
    - gradle buildZip
  post_build:
   commands:
-   - aws lambda update-function-code --function-name lambda-test --zip-file fileb://build/distributions//lambdaTest-0.0.1.zip
+   - cd build
+   - cd distributions
+   - ls
+   - aws lambda update-function-code --function-name lambda-test --zip-file file:lambdaTest-0.0.1.zip
    - aws cloudformation package --template-file samTemplate.yml --s3-bucket boneylambdabucket --output-template-file outputSamTemplate.yml
 artifacts:
   type: zip
