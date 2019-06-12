@@ -8,7 +8,7 @@ Resources:
       Handler: com.lambda.lambdaTest.MainController::test
       Runtime: java8
       CodeUri: .
-      Role: arn:aws:iam::435341406651:role/CloudFormationServiceRole
+      Role: arn:aws:iam::435341406651:role/DemoLambda
       FunctionName: lambda-test
       Description: 'Lambda function for Demo'
       MemorySize: 128
