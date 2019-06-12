@@ -4,7 +4,7 @@ phases:
     runtime-versions:
       java: openjdk8
     commands:
-      - aws cloudformation package --template-file samTemplate.yaml --s3-bucket pdomala-lambda-pipeline --output-template-file outputSamTemplate.yaml
+      - aws cloudformation package --template-file samTemplate.yaml --s3-bucket boneylambdabucket --output-template-file outputSamTemplate.yaml
 artifacts:
   type: zip
   files:
