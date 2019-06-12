@@ -1,11 +1,35 @@
 version: 0.2
 phases:
- pre_build:
-  commands:
-   - echo gradle -version
- build:
-  commands:
-   - gradle buildZip
- post_build:
-  commands:
-   - aws lambda update-function-code --function-name lambda-test --zip-file fileb://build/distributions//lambdaTest-0.0.1.zip
+  pre_build:
+    commands:
+      - sudo apt-get update
+      - sudo apt-get install ant -y
+      - java -version
+      - ant -version
+      - cd build/lib
+      - cp ivy-2.5.0-rc1.jar /usr/share/ant/lib/
+      - cd ..
+      - cd ..
+      - aws --version
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email)
+
+  build:
+    commands:
+      - cd build
+      - echo Ant build starting...
+      - ant build-for-${ENV}
+      - cd ..
+      - echo Building the Docker image...
+      - echo ${TAG}
+      - docker build -t ${CF_REPOSITORY_URI}:${TAG} .
+  post_build:
+    commands:
+      - echo push latest Docker images to ECR...
+      - eval $(aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email)
+      - echo ${TAG}
+      - docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${CF_DOCKER_CONTAINER_NAME}:${TAG}
+      - printf '[{"name":"%s","imageUri":"%s"}]' ${CF_DOCKER_CONTAINER_NAME} ${CF_REPOSITORY_URI}:${TAG} > imagedefinitions.json
+      - cat imagedefinitions.json
+artifacts:
+  files: imagedefinitions.json
