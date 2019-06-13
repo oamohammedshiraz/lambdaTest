@@ -1,16 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
-Description: Demo Lambda
-
+Description: Lambda - Quotes
 Resources:
-  CDDemoLambda:
+  developerlambdaquotes:
     Type: 'AWS::Serverless::Function'
     Properties:
+      FunctionName: lambda-demo
       Handler: com.lambda.lambdaTest.MainController::test
       Runtime: java8
       CodeUri: ./build/distributions/lambdaTest-0.0.1.zip
-      Role: arn:aws:iam::435341406651:role/DemoLambda
-      FunctionName: lambda-test
       Description: 'Lambda function for Demo'
       MemorySize: 128
       Timeout: 30
+      Role: arn:aws:iam::435341406651:role/DemoLambda
