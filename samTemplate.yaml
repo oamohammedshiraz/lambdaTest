@@ -12,4 +12,4 @@ Resources:
       Description: 'Lambda function for Demo'
       MemorySize: 128
       Timeout: 30
-      # Role: arn:aws:iam::435341406651:role/DemoLambda
+      
